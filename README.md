@@ -57,6 +57,9 @@ Assuming a custom resource(CR) was created with required details (as example of 
     
 
 #### Sample Custom Resources
+
+An example of custom resource without  `label` key
+
 ```yaml
 apiVersion: csrapprover.redhat.com/v1alpha1
 kind: Csrapprove
@@ -68,7 +71,7 @@ spec:
 
 ```
 
-
+An example of custom resource with  `label` key
 ```yaml
 apiVersion: csrapprover.redhat.com/v1alpha1
 kind: Csrapprove
