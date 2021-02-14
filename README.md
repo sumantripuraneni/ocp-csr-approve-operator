@@ -6,7 +6,7 @@ This operator provides the following functionality:
 *  Watch the CSR endpoint for CSR requests
 *  Decide if the CSR should be approved or not
 *  Approve and update CSR status
-*  Optionally label the approved node 
+*  Optionally label the approved node(s)
 
 
 ## Introduction
