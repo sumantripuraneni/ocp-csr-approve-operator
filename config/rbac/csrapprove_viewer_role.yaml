@@ -1,0 +1,20 @@
+# permissions for end users to view csrapproves.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: csrapprove-viewer-role
+rules:
+- apiGroups:
+  - csrapprover.redhat.com
+  resources:
+  - csrapproves
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - csrapprover.redhat.com
+  resources:
+  - csrapproves/status
+  verbs:
+  - get

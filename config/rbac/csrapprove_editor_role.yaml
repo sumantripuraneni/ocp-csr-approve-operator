@@ -1,0 +1,24 @@
+# permissions for end users to edit csrapproves.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: csrapprove-editor-role
+rules:
+- apiGroups:
+  - csrapprover.redhat.com
+  resources:
+  - csrapproves
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - csrapprover.redhat.com
+  resources:
+  - csrapproves/status
+  verbs:
+  - get

@@ -1,0 +1,6 @@
+apiVersion: csrapprover.redhat.com/v1alpha1
+kind: Csrapprove
+metadata:
+  name: csrapprove-sample
+spec:
+  foo: bar

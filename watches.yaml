@@ -1,0 +1,8 @@
+---
+# Use the 'create api' subcommand to add watches to this file.
+- version: v1alpha1
+  group: csrapprover.redhat.com
+  kind: Csrapprove
+  playbook: playbooks/csrapprove.yml
+  reconcilePeriod: 300s
+# +kubebuilder:scaffold:watch

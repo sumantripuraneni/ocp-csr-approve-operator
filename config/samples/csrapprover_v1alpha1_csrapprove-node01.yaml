@@ -1,0 +1,7 @@
+apiVersion: csrapprover.redhat.com/v1alpha1
+kind: Csrapprove
+metadata:
+  name: csrapprove-ocsnode01
+  namespace: ocp-csr-approve-operator-system
+spec:
+  nodes_info: '[ {"node": "ocp4-ocsnode01.cluster2.openshifthappens.com", "ip": "10.240.1.12"} ]'

@@ -1,0 +1,73 @@
+---
+- name: Play to approve OpeShift node CSR
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Get a list of all CSRs
+    k8s_info:
+      api_version: certificates.k8s.io/v1
+      kind: CertificateSigningRequest
+    register: csr_data 
+
+
+  - name: Initialize an empty fact 
+    set_fact:
+       csr_list: []
+
+
+  - name: Create a list of CSRs pending for approval
+    set_fact:
+      csr_list: "{{ csr_list + [ item.metadata.name ] }}"
+    loop: "{{ csr_data.resources }}"
+    when: item.status | length == 0 
+    loop_control:
+       label: "{{ item.metadata.name }}"
+
+
+  - name: Print list of CSRs pending for approval
+    debug: 
+      msg: "{{ csr_list }}"
+
+
+  # - set_fact:
+  #     nodes_info: [ {"node": "ocp4-ocsnode01.cluster2.openshifthappens.com", "ip": "10.240.1.12", "label": "node-role.kubernetes.io/storage="},
+  #                 {"node": "ocp4-ocsnode001.cluster2.openshifthappens.com", "ip": "10.240.1.120", "label": "node-role.kubernetes.io/storage="}
+  #     ]
+
+  - name: Block to validate, approve CSRs and label nodes when CSRs in pending state
+    block:
+
+      - name: Validate and approve CSRs 
+        validate-approve-csr:
+          csr_list: "{{ csr_list }}"
+          node_info_list: "{{ nodes_info }}"
+        register: result
+
+
+      - name: Print CSR approved Nodes
+        debug:
+          msg: "{{ result }}"
+
+
+      - name: Block to label nodes when CSRs are approved for node(s) 
+        block:
+
+          - name: Label OpenShift node
+            label-nodes:
+              node_info_list: "{{ result.approvedNodesToLabel }}"
+            register: labelling_result
+
+
+          - name: Print the list of OpenShift nodes labelled 
+            debug: 
+              msg: "{{ labelling_result.labelledNodeList }}"
+
+        when:
+          - result is defined
+          - result.approvedNodesToLabel | length > 0 
+  
+    when: 
+      - csr_list | length > 0
+  
+    
