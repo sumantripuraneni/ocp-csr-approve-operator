@@ -49,8 +49,32 @@ Assuming a custom resource(CR) was created with required details (as example of 
 
 *  Get list of Certificate Signing Requests (CSR) 
 *  Prepares a list of Certificate Signing Requests (CSR) waiting for approval
-*  Extract and validate CSR 
+*  Extract and validate Certificate Signing Request (CSR) 
     *  Extracts DNS (for bootstrap CSR) , DNS and IP Address (for node CSR) from Certificate Signing Requests waiting for approval
-    *  
+    *  Validate Certificate Signing Request (DNS, IP Address) with data from custom resource 
+    *  Approve Certificate Signing Request (CSR), if the DNS (for bootstrap CSR) , DNS and IP Address matches (for node CSR) matches with customr resource data
+*  Optionally, label the node with the label data provided in customr resource
     
 
+#### Sample Custom Resources
+```yaml
+apiVersion: csrapprover.redhat.com/v1alpha1
+kind: Csrapprove
+metadata:
+  name: csrapprove-worker-1
+  namespace: ocp-csr-approve-operator-system
+spec:
+  nodes_info: '[ {"node": "ocp4-worker-1.example.com", "ip": "100.240.10.120"} ]'
+
+```
+
+
+```yaml
+apiVersion: csrapprover.redhat.com/v1alpha1
+kind: Csrapprove
+metadata:
+  name: csrapprove-ocsnode02
+  namespace: ocp-csr-approve-operator-system
+spec:
+  nodes_info: '[ {"node": "ocp4-ocsnode02.example.com", "ip": "100.240.64.1", "label": "node-role.kubernetes.io/storage=, foo=bar"} ]'
+```
