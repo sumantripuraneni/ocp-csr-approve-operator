@@ -40,4 +40,17 @@ API, which is what OpenShift has done.
 
 ## Motivation
 
-In user provisioned installer (UPI) disconnected environment, `cluster-machine-approver` cannot be leveraged to approve CSR's. 
+In user provisioned installer (UPI) disconnected environment, `cluster-machine-approver` cannot be leveraged to approve CSR's. Initailly, we leveraged Ansible to approve the CSR's in our provisioning playbooks/roles, however overall node provisioning process was taking quite a time waiting for CSR's to appear and approve the CSR's, when adding huge number of nodes (example 20 nodes) to the cluster. so this custom operator was developed to approve the OpenShift CSR's. 
+
+
+## CSR Approval Workflow
+
+Assuming a custom resource(CR) was created with required details (as example of custom resource shown below), this operator follow below steps
+
+*  Get list of Certificate Signing Requests (CSR) 
+*  Prepares a list of Certificate Signing Requests (CSR) waiting for approval
+*  Extract and validate CSR 
+    *  Extracts DNS (for bootstrap CSR) , DNS and IP Address (for node CSR) from Certificate Signing Requests waiting for approval
+    *  
+    
+
