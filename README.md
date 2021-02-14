@@ -40,7 +40,7 @@ API, which is what OpenShift has done.
 
 ## Motivation
 
-In user provisioned installer (UPI) disconnected environment, `cluster-machine-approver` cannot be leveraged to approve CSR's. Initailly, we leveraged Ansible to approve the CSR's in our provisioning playbooks/roles, however overall node provisioning process was taking quite a time waiting for CSR's to appear and approve the CSR's, when adding huge number of nodes (example 20 nodes) to the cluster. so this custom operator was developed to approve the OpenShift CSR's. 
+In user provisioned installer (UPI) disconnected environment, `cluster-machine-approver` cannot be leveraged to approve CSR's. Initailly, we leveraged Ansible to approve the CSR's in our provisioning playbooks/roles, however overall node provisioning process was taking quite a time waiting for CSR's to appear and approve the CSR's, when adding huge number of nodes (example 20 nodes) to the cluster. So, this custom operator was developed to approve the OpenShift CSR's.
 
 
 ## CSR Approval Workflow
