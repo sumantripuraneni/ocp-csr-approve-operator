@@ -12,10 +12,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import cryptography.x509
 from cryptography.hazmat.backends import default_backend
 
-
 # Disable InsecureRequestWarning warnings while connecting to OpenShift API
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
 
 # Check if code is running in OpenShift
 if "KUBERNETES_SERVICE_HOST" in os.environ and "KUBERNETES_SERVICE_PORT" in os.environ:
@@ -27,18 +25,27 @@ else:
 # Function to validate and approve csr
 def valiate_approve_csr(csrList, nodeInfoList):
 
-
     # Initialize empty lists
     approvedBootStrappedNodes, approvedNodes, approvedNodesToLabel, approvedCSRs = [], [], [], []
 
     # a reference to the API  
     certs_api = client.CertificatesV1beta1Api()
 
-    for csrName in csrList:
+    # Auth user and groups
+    bootstrapGroups = ['system:serviceaccounts:openshift-machine-config-operator',
+                    'system:authenticated', 'system:serviceaccounts']
+    bootstrapUser = 'system:serviceaccount:openshift-machine-config-operator:node-bootstrapper'
+     
+    nodeGroups = ['system:nodes', 'system:authenticated']
+    nodeUser = 'system:node:'
 
+    for csrName in csrList:
 
         #Initialize variables
         csrType, dnsName, ip = None, None, None
+
+        nodeUserValidation = False
+        bootstrapUserValidation = False
 
         # obtain the body of the CSR we want to sign
         body = certs_api.read_certificate_signing_request_status(csrName)
@@ -53,35 +60,36 @@ def valiate_approve_csr(csrList, nodeInfoList):
             print("Error loading CSR")
             sys.exit(1)
 
-
         if 'bootstrapper' in body.spec.username and 'system:node:' not in body.spec.username:
 
-            csrType = "bootstrapper"
-
+            groupDifference = set(bootstrapGroups) - set(body.spec.groups)
             dnsName = certificate.subject.get_attributes_for_oid(cryptography.x509.oid.NameOID.COMMON_NAME)[0].value.split(':')[2]
 
-            print("Certificate DNS: {}".format(dnsName))
+            if dnsName and body.spec.username == bootstrapUser and len(groupDifference) == 0:
+
+                csrType = "bootstrapper"
+                bootstrapUserValidation = True                     
 
         elif 'bootstrapper' not in body.spec.username and 'system:node:'  in body.spec.username:
 
-            csrType = "node"
+            groupDifference = set(nodeGroups) - set(body.spec.groups)
 
             crt_san_data = certificate.extensions.get_extension_for_oid(cryptography.x509.oid.ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
-
             dnsName = crt_san_data.value.get_values_for_type(cryptography.x509.DNSName)[0]
-
             ip = crt_san_data.value.get_values_for_type(cryptography.x509.IPAddress)[0]
 
-            print("Certificate DNS: {}".format(dnsName))
-            print("Certificate IP Address: {}".format(ip))
+            if dnsName and body.spec.username  == nodeUser + dnsName and len(groupDifference) == 0:
 
+                csrType = "node"
+                nodeUserValidation = True
+                
         else:
             print("Unknown CSR type")
             sys.exit(1)
 
         if ( ( csrType == "node" and next((item for item in nodeInfoList if item["node"] == dnsName), None) and 
-             next((item for item in nodeInfoList if item["ip"] == str(ip)), None) ) or 
-             ( csrType == "bootstrapper" and next((item for item in nodeInfoList if item["node"] == dnsName), None))):
+             next((item for item in nodeInfoList if item["ip"] == str(ip)), None) and nodeUserValidation ) or 
+             ( csrType == "bootstrapper" and next((item for item in nodeInfoList if item["node"] == dnsName), None) and bootstrapUserValidation)):
  
             # create an approval condition
             approval_condition = client.V1beta1CertificateSigningRequestCondition(
