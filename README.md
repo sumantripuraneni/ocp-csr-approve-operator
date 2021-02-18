@@ -53,7 +53,12 @@ Assuming a custom resource(CR) was created with required details (as example of 
 *  Validate and approve a bootstarp CSR <br>
     *  The username in the CSR must be `system:serviceaccount:openshift-machine-config-operator:node-bootstrapper`<br>
     *  The groups in the CSR must be `system:serviceaccounts:openshift-machine-config-operator, system:serviceaccounts, and system:authenticated`<br>
-    *  Approve Certificate Signing Request (CSR), if the DNS (for bootstrap CSR) , DNS and IP Address matches (for node CSR) matches with customr resource data<br>
+    *   CSR DNS matches with custom resource data
+    *  Approve Certificate Signing Request (CSR), if all validations pass <br>
+*  Validate and approve a node CSR
+    *  The username in the CSR must be `system:node:<nodeDNS>`<br>
+    *  The groups in the CSR must be `'system:nodes', 'system:authenticated'`<br>
+    *  Approve Certificate Signing Request (CSR), if DNS and IP Address matches matches with customr resource data<br>
 *  Optionally, label the node with the label data provided in customr resource
     
 
