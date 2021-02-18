@@ -52,10 +52,10 @@ Assuming a custom resource(CR) was created with required details (as example of 
 *  Extract and validate Certificate Signing Request (CSR) 
     *  Extracts DNS (for bootstrap CSR) , DNS and IP Address (for node CSR) from Certificate Signing Requests waiting for approval
     *  Validate and approve a bootstarp CSR 
-      *   The username in the CSR must be system:serviceaccount:openshift-machine-config-operator:node-bootstrapper
-      *   The groups in the CSR must be system:serviceaccounts:openshift-machine-config-operator, system:serviceaccounts, and system:authenticated
-      *  Validate Certificate Signing Request (DNS) with data from custom resource 
-      *  Approve Certificate Signing Request (CSR), if the DNS (for bootstrap CSR) , DNS and IP Address matches (for node CSR) matches with customr resource data
+           *   The username in the CSR must be `system:serviceaccount:openshift-machine-config-operator:node-bootstrapper`
+           *   The groups in the CSR must be `system:serviceaccounts:openshift-machine-config-operator, system:serviceaccounts, and system:authenticated`
+           *  Validate Certificate Signing Request (DNS) with data from custom resource 
+           *  Approve Certificate Signing Request (CSR), if the DNS (for bootstrap CSR) , DNS and IP Address matches (for node CSR) matches with customr resource data
 *  Optionally, label the node with the label data provided in customr resource
     
 
