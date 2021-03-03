@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: quay.io/suman.tripuraneni/ocp-csr-approve-operator-test
-  newTag: v0.8
+  newTag: v2.0

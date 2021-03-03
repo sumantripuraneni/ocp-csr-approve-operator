@@ -30,11 +30,6 @@
       msg: "{{ csr_list }}"
 
 
-  # - set_fact:
-  #     nodes_info: [ {"node": "ocp4-ocsnode01.cluster2.openshifthappens.com", "ip": "10.240.1.12", "label": "node-role.kubernetes.io/storage="},
-  #                 {"node": "ocp4-ocsnode001.cluster2.openshifthappens.com", "ip": "10.240.1.120", "label": "node-role.kubernetes.io/storage="}
-  #     ]
-
   - name: Block to validate, approve CSRs and label nodes when CSRs in pending state
     block:
 
@@ -66,8 +61,24 @@
         when:
           - result is defined
           - result.approvedNodesToLabel | length > 0 
+
+
+      - name: Block to taint nodes when CSRs are approved for node(s) 
+        block:
+
+          - name: Taint OpenShift node
+            taint-nodes:
+              node_info_list: "{{ result.approvedNodesToTaint }}"
+            register: taint_result
+
+
+          - name: Print the list of OpenShift nodes tainted 
+            debug: 
+              msg: "{{ taint_result.taintedNodeList }}"
+
+        when:
+          - result is defined
+          - result.approvedNodesToTaint | length > 0           
   
     when: 
       - csr_list | length > 0
-  
-    

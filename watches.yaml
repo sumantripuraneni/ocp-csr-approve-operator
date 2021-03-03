@@ -4,5 +4,5 @@
   group: csrapprover.redhat.com
   kind: Csrapprove
   playbook: playbooks/csrapprove.yml
-  reconcilePeriod: 300s
+  reconcilePeriod: 120s
 # +kubebuilder:scaffold:watch

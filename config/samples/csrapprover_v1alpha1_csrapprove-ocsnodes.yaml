@@ -1,0 +1,16 @@
+apiVersion: csrapprover.redhat.com/v1alpha1
+kind: Csrapprove
+metadata:
+  name: csrapprove-ocsnodes
+  namespace: ocp-csr-approve-operator-system
+spec:
+  nodes_info:
+    - node: ocp4-ocsnode01.cluster2.openshifthappens.com
+      ip: 10.240.1.12
+    - node: ocp4-ocsnode02.cluster2.openshifthappens.com
+      ip: 10.240.64.12
+      label: "node-role.kubernetes.io/storage=, foo=bar"
+    - node: ocp4-ocsnode03.cluster2.openshifthappens.com
+      ip:  10.240.128.12
+      label: "node-role.kubernetes.io/storage=, foo=bar"
+      taint: "node.ocs.openshift.io/storage=true:NoSchedule, key1=value1:NoSchedule,key2=value2:NoSchedule"

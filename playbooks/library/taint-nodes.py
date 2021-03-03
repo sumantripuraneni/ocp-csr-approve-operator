@@ -5,7 +5,6 @@ from ansible.module_utils.basic import *
 from kubernetes import client, config
 import requests
 import os
-import sys
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Disable InsecureRequestWarning warnings while connecting to OpenShift API
@@ -18,24 +17,28 @@ if "KUBERNETES_SERVICE_HOST" in os.environ and "KUBERNETES_SERVICE_PORT" in os.e
 else:
     config.load_kube_config()
 
-
-def labelNode(nodeInfoList):
+#Function to taint nodes
+def taintNode(nodeInfoList):
 
     api_instance = client.CoreV1Api()
-    labelledNodeList = []
+    taintedNodeList = []
 
     for item in nodeInfoList:
-        dictLabel = {}
-        for label in item["label"].split(","):
-            dictLabel[label.split("=")[0].strip()] = label.split("=")[1].strip()
+        taints_list = []
+        for taint in item["taint"].split(","):
+            taintDict = {}
+            taintDict["key"] = taint.split("=")[0].strip()
+            taintDict["value"] = taint.split("=")[1].strip().split(":")[0]
+            taintDict["effect"] = taint.split(":")[1].strip()
+            taints_list.append(taintDict)
 
-        body = {"metadata": {"labels": dictLabel}}
+        body = {"spec": {"taints": taints_list}}
 
-        api_response = api_instance.patch_node(item["node"], body)
+        api_response = api_instance.patch_node(item["node"], body=body)
 
-        labelledNodeList.append(item["node"])
+        taintedNodeList.append(item["node"])
 
-    return labelledNodeList
+    return taintedNodeList
 
 
 def run_module():
@@ -46,13 +49,13 @@ def run_module():
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
-    labelledNodeList = labelNode(module.params["node_info_list"])
+    taintedNodeList = taintNode(module.params["node_info_list"])
 
-    result = dict(changed=False, labelledNodeCount=0, labelledNodeList="")
+    result = dict(changed=False, taintedNodeCount=0, taintedNodeList="")
 
-    if len(labelledNodeList):
-        result["labelledNodeCount"] = len(labelledNodeList)
-        result["labelledNodeList"] = labelledNodeList
+    if len(taintedNodeList):
+        result["taintedNodeCount"] = len(taintedNodeList)
+        result["taintedNodeList"] = taintedNodeList
         result["changed"] = True
 
     module.exit_json(**result)

@@ -4,4 +4,4 @@ metadata:
   name: csrapprove-ocsnode03
   namespace: ocp-csr-approve-operator-system
 spec:
-  nodes_info: '[ {"node": "ocp4-ocsnode03.cluster2.openshifthappens.com", "ip": "10.240.128.12"} ]'
+  nodes_info: '[ {"node": "ocp4-ocsnode03.cluster2.openshifthappens.com", "ip": "10.240.128.12", "label": "node-role.kubernetes.io/storage=, foo=bar", "taint": "key1=value1:NoSchedule,node-role.kubernetes.io/master=:NoSchedule,key2=value2:NoExecute"} ]'
